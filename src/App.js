@@ -10,7 +10,9 @@ import AuthorDetail from "./AuthorDetail";
 
 class App extends Component {
   state = {
-    currentAuthor: null
+    authors: authors,
+    currentAuthor: null,
+    filteredAuthors: authors
   };
   selectAuthor = author => {
     this.setState({ currentAuthor: author });
@@ -20,7 +22,16 @@ class App extends Component {
     this.setState({ currentAuthor: null });
   };
 
-  filterAuthors = query => {};
+  filterAuthors = query => {
+    query = query.toLowerCase();
+    let filteredAuthors = this.state.authors.filter(author => {
+      return `${author.first_name} ${author.last_name}`
+        .toLowerCase()
+        .includes(query);
+    });
+    this.setState({ filteredAuthors: filteredAuthors });
+  };
+
   render() {
     if (this.state.currentAuthor) {
       return (
@@ -30,7 +41,7 @@ class App extends Component {
               <Sidebar resetState={this.resetState} />
             </div>
             <div className="content col-10">
-              <AuthorDetail />
+              <AuthorDetail author={this.state.currentAuthor} />
             </div>
           </div>
         </div>
@@ -44,7 +55,11 @@ class App extends Component {
             <Sidebar />
           </div>
           <div className="content col-10">
-            <AuthorsList authors={authors} selectAuthor={this.selectAuthor} />
+            <AuthorsList
+              authors={this.state.filteredAuthors}
+              selectAuthor={this.selectAuthor}
+              filterAuthors={this.filterAuthors}
+            />
           </div>
         </div>
       </div>
